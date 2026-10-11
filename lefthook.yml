@@ -1,0 +1,7 @@
+pre-commit:
+  parallel: false
+  commands:
+    lint:
+      glob:
+        - 'src/**/*.{js,jsx,mjs,cjs,ts,tsx}'
+      run: bun run lint
