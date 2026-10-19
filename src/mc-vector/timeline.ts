@@ -44,7 +44,7 @@ export const stageLevelAt = (frame: number): number => {
 };
 
 // ---------------------------------------------------------------------------
-// Sound cues (v3: few, quiet, soft). Files live in public/audio/sfx-<name>.wav
+// Sound cues (v3: few, quiet, soft). Files live in public/mc-vector/audio/sfx-<name>.wav
 // and are synthesized by scripts/generate-audio.ts.
 // ---------------------------------------------------------------------------
 

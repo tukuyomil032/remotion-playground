@@ -279,7 +279,7 @@ const NameBody: React.FC<{ durationInFrames: number }> = ({ durationInFrames }) 
           <div style={{ display: "flex", alignItems: "center", gap: 44 }}>
             {icon > 0.001 ? (
               <Img
-                src={staticFile("brand/icon.png")}
+                src={staticFile("mc-vector/brand/icon.png")}
                 style={{
                   width: 176,
                   height: 176,

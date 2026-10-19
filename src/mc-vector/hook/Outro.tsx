@@ -195,7 +195,7 @@ const OutroBody: React.FC = () => {
       <div style={{ position: "absolute", left: 0, right: 0, top: 384, display: "flex", justifyContent: "center", alignItems: "center", gap: 20 }}>
         {icon > 0.001 ? (
           <Img
-            src={staticFile("brand/icon.png")}
+            src={staticFile("mc-vector/brand/icon.png")}
             style={{
               width: 84,
               height: 84,

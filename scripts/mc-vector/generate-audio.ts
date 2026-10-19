@@ -2,11 +2,11 @@
 // Run: bun run generate:audio
 //
 // Output (48 kHz, stereo, 16-bit PCM):
-//   public/audio/bgm.wav           as long as the video (src/layout.ts), 120 BPM, C major, soft half-time groove
-//   public/audio/sfx-*.wav         tap / chime / pen / page
+//   public/mc-vector/audio/bgm.wav           as long as the video (src/mc-vector/layout.ts), 120 BPM, C major, soft half-time groove
+//   public/mc-vector/audio/sfx-*.wav         tap / chime / pen / page
 //                                  + countdown / ignite / rocket / boom / row (rocket and table scenes)
 //
-// The BGM follows the scene layout in src/layout.ts: hook, name, speed (rocket),
+// The BGM follows the scene layout in src/mc-vector/layout.ts: hook, name, speed (rocket),
 // features, security (table), outro. Drums are soft: a rounded kick, a brush-like
 // snap and closed hats. Felt piano, a soft pad and a thin round bass carry the tune.
 // No risers, impacts, drops or claps.
@@ -20,16 +20,16 @@ import { copyFileSync, mkdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { FEATURES_START_BAR, OUTRO_START_BAR, SECURITY_START_BAR, TOTAL_BARS } from "../src/layout";
+import { FEATURES_START_BAR, OUTRO_START_BAR, SECURITY_START_BAR, TOTAL_BARS } from "../../src/mc-vector/layout";
 
 const FFMPEG = "/opt/homebrew/bin/ffmpeg";
-const OUT_DIR = fileURLToPath(new URL("../public/audio/", import.meta.url));
+const OUT_DIR = fileURLToPath(new URL("../../public/mc-vector/audio/", import.meta.url));
 
 const SR = 48000;
 const BPM = 120;
 const BEAT = 60 / BPM; // 0.5 s
 const BAR = BEAT * 4; // 2 s
-// Bar positions come from the video's own layout (src/layout.ts), so the music
+// Bar positions come from the video's own layout (src/mc-vector/layout.ts), so the music
 // always ends and changes where the scenes do.
 const DURATION = TOTAL_BARS * BAR;
 /** Drums drop out and the music rings out over the last two bars. */
@@ -437,7 +437,7 @@ const renderSnap = (dst: Stereo, t0: number, gain: number, pan: number): void =>
 // ---------------------------------------------------------------------------
 // BGM
 //
-// Arrangement (bars of 2 s; section edges come from src/layout.ts, bar numbers
+// Arrangement (bars of 2 s; section edges come from src/mc-vector/layout.ts, bar numbers
 // below are for the current layout of 64 bars = 128 s):
 //   bars  0 - 2.5    hook       sparse piano, soft pad, closed hats (quiet)
 //   bars  2.5 - 5    name       pad + bass + piano quarter notes; kick on beat 1 of bar 4 only

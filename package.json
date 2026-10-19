@@ -1,7 +1,7 @@
 {
-  "name": "mc-vector-promo",
+  "name": "remotion-playground",
   "version": "1.0.0",
-  "description": "MC-Vector promo video (code-built)",
+  "description": "Code-built promo videos made with Remotion",
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
@@ -24,7 +24,7 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "oxlint src && tsc",
-    "render": "remotion render src/index.ts Promo out/mc-vector-promo.mp4 --codec=h264",
-    "generate:audio": "bun scripts/generate-audio.ts"
+    "render:mc-vector": "remotion render src/index.ts MCVectorPromo out/mc-vector-promo.mp4 --codec=h264",
+    "generate:audio:mc-vector": "bun scripts/mc-vector/generate-audio.ts"
   }
 }

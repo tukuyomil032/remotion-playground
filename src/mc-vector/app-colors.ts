@@ -31,7 +31,7 @@ const chart = {
   green: "#22c55e",
 } as const;
 
-/** Gold of the icon's arrow (sampled from public/brand/icon.png). */
+/** Gold of the icon's arrow (sampled from public/mc-vector/brand/icon.png). */
 const gold = "#e8b030";
 
 /** App-replica colors (dark). Used by src/ui/ and src/ops/. */

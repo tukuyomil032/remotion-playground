@@ -20,7 +20,7 @@ const C = SPEED_CUES;
 const INK = palette.ink;
 const SPACE = "#8a5636";
 
-/** Size and startup numbers shown at the end. Startup is measured (see docs/mc-vector-facts.md). */
+/** Size and startup numbers shown at the end. Startup is measured (see docs/mc-vector/facts.md). */
 const SIZE_MB = 30;
 const STARTUP_S = 0.3;
 

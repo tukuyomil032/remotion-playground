@@ -27,7 +27,7 @@ export const Soundtrack: React.FC = () => {
   return (
     <>
       <Audio
-        src={staticFile("audio/bgm.wav")}
+        src={staticFile("mc-vector/audio/bgm.wav")}
         name="bgm"
         volume={(f) =>
           interpolate(f, [0, fadeIn, durationInFrames - fadeOut, durationInFrames], [0, BGM_VOLUME, BGM_VOLUME, 0], {
@@ -47,7 +47,7 @@ export const Soundtrack: React.FC = () => {
           layout="none"
           name={`sfx ${cue.sfx}${cue.note ? ` (${cue.note})` : ""}`}
         >
-          <Audio src={staticFile(`audio/sfx-${cue.sfx}.wav`)} volume={cue.volume ?? 1} />
+          <Audio src={staticFile(`mc-vector/audio/sfx-${cue.sfx}.wav`)} volume={cue.volume ?? 1} />
         </Sequence>
       ))}
     </>
