@@ -1,12 +1,12 @@
 // Scene layout for the MC-Vector promo (v5). Pure TypeScript with no Remotion
-// import, so scripts/generate-audio.ts can read the same bar positions.
+// import, so scripts/mc-vector/generate-audio.ts can read the same bar positions.
 //
 // 60 fps, 120 BPM -> 1 beat = 30 frames, 1 bar (4/4) = 120 frames = 2 s.
-//
-// Every scene keeps its own (inner) timing. A beat plays its scene through one
-// or more Sequence segments, each with its own playbackRate, so a scene can run
-// slowly where clicks are close together and rest on the whole window at the
-// start and the end. `segments` maps the scene's clock to the timeline.
+// Scenes are played through warp segments (see src/shared/warp.ts).
+
+import { type OpPacing, type OpSpec, planOp, planSteady, type WarpPlan, type WarpSegment, warpFrame } from "../shared/warp";
+
+export type { WarpSegment };
 
 export const FPS = 60;
 export const BPM = 120;
@@ -46,18 +46,6 @@ export type BeatId =
   | "security"
   | "outro";
 
-/** One stretch of a scene played at a constant speed. */
-export type WarpSegment = {
-  /** Absolute frame where the segment starts on the timeline. */
-  from: number;
-  /** Length on the timeline. */
-  duration: number;
-  /** Scene (inner) frame at the segment start. */
-  innerFrom: number;
-  /** Inner frames per timeline frame (< 1 = slowed down). */
-  rate: number;
-};
-
 export type BeatEntry = {
   id: BeatId;
   kind: BeatKind;
@@ -80,28 +68,13 @@ export type BeatEntry = {
 };
 
 /** Timeline frame of a scene-local (inner clock) frame. */
-export const beatFrame = (b: BeatEntry, local: number): number => {
-  for (let i = b.segments.length - 1; i >= 0; i--) {
-    const s = b.segments[i];
-    if (local >= s.innerFrom) {
-      return s.from + Math.round((local - s.innerFrom) / s.rate);
-    }
-  }
-  return b.from;
-};
+export const beatFrame = (b: BeatEntry, local: number): number => warpFrame(b, local);
 
 // ---------------------------------------------------------------------------
 // Operation scenes: slow where clicks are close, rest on the whole window
 // ---------------------------------------------------------------------------
 
-/** Scene frames of the cursor clicks (taps) and the "done" moments (chimes), taken from src/ops/. */
-type OpSpec = {
-  taps: readonly number[];
-  chimes: readonly number[];
-  /** Scene frame where the camera is back on the whole window for good. */
-  wideAt: number;
-};
-
+/** Scene frames of the cursor clicks (taps) and the "done" moments (chimes), taken from src/mc-vector/ops/. */
 export const OP_SPECS: Record<"op1" | "op2" | "op3" | "op4" | "op5", OpSpec> = {
   // Add Server, Paper, 1.21.10, Create
   op1: { taps: [88, 154, 180, 232], chimes: [300], wideAt: 380 },
@@ -131,42 +104,16 @@ export const HOLD_RATE = 0.02;
 /** Stage exitFrames default: the window slides out over this many scene frames. */
 export const EXIT_FRAMES = 36;
 
-type Plan = { segments: WarpSegment[]; inner: number; duration: number };
-
-const planOp = (spec: OpSpec, start: number): Plan => {
-  const segments: WarpSegment[] = [];
-  let t = start;
-  let inner = 0;
-  const add = (duration: number, rate: number): void => {
-    segments.push({ from: t, duration, innerFrom: inner, rate });
-    t += duration;
-    inner += duration * rate;
-  };
-
-  // Slide in, then rest on the whole window.
-  add(Math.round(ENTER_END / EDGE_RATE), EDGE_RATE);
-  add(HOLD_START, HOLD_RATE);
-
-  // Each stretch between events takes at least MIN_GAP on the timeline.
-  const events = [...spec.taps, ...spec.chimes].sort((a, b) => a - b).filter((f) => f > inner + 1);
-  for (const f of [...events, spec.wideAt]) {
-    const gap = f - inner;
-    if (gap <= 0) {
-      continue;
-    }
-    const duration = Math.round(Math.max(gap / BASE_RATE, MIN_GAP));
-    add(duration, gap / duration);
-  }
-
-  // Rest on the whole window again, then slide out. The rest is stretched so the
-  // scene ends on a whole bar.
-  const exitDuration = Math.round(EXIT_FRAMES / EDGE_RATE);
-  const total = t - start + HOLD_END + exitDuration;
-  const padded = Math.ceil(total / FRAMES_PER_BAR) * FRAMES_PER_BAR;
-  add(HOLD_END + (padded - total), HOLD_RATE);
-  add(exitDuration, EXIT_FRAMES / exitDuration);
-
-  return { segments, inner: Math.round(inner), duration: padded };
+const PACING: OpPacing = {
+  baseRate: BASE_RATE,
+  minGap: MIN_GAP,
+  edgeRate: EDGE_RATE,
+  enterEnd: ENTER_END,
+  holdStart: HOLD_START,
+  holdEnd: HOLD_END,
+  holdRate: HOLD_RATE,
+  exitFrames: EXIT_FRAMES,
+  padTo: FRAMES_PER_BAR,
 };
 
 // ---------------------------------------------------------------------------
@@ -183,7 +130,7 @@ const buildBeats = (): BeatEntry[] => {
     id: BeatId,
     kind: BeatKind,
     section: number | null,
-    plan: Plan,
+    plan: WarpPlan,
   ): void => {
     list.push({
       id,
@@ -202,16 +149,11 @@ const buildBeats = (): BeatEntry[] => {
 
   /** A scene played at one speed for a whole number of half bars. */
   const steady = (id: BeatId, kind: BeatKind, bars: number, rate = 1, section: number | null = null): void => {
-    const duration = bar(bars);
-    push(id, kind, section, {
-      segments: [{ from: cursor, duration, innerFrom: 0, rate }],
-      inner: Math.round(duration * rate),
-      duration,
-    });
+    push(id, kind, section, planSteady(cursor, bar(bars), rate));
   };
 
   const op = (id: keyof typeof OP_SPECS, section: number): void => {
-    push(id, "op", section, planOp(OP_SPECS[id], cursor));
+    push(id, "op", section, planOp(OP_SPECS[id], cursor, PACING));
   };
 
   steady("hook", "hook", 2.5, 4 / 5);

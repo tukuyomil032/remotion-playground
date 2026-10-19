@@ -8,39 +8,18 @@ import { ExtendOp } from "./ops/ExtendOp";
 import { RunOp } from "./ops/RunOp";
 import { ShareOp } from "./ops/ShareOp";
 import { SecurityScene } from "./security/SecurityScene";
+import { type SceneProps, Warped } from "../shared/Warped";
 import { Soundtrack } from "./Soundtrack";
 import { SpeedScene } from "./speed/SpeedScene";
 import { Backdrop } from "./stage/Backdrop";
 import { Title1, Title2, Title3, Title4, Title5 } from "./title/Titles";
 import { type BeatId, beatById } from "./timeline";
 
-type SceneProps = { from: number; durationInFrames: number };
-
 // Every beat is mounted at the root with absolute frames. Each scene keeps its
-// own inner timing and runs on a warped clock: a beat is played as consecutive
-// segments, and each segment's Sequence has its own playbackRate, so
-// useCurrentFrame() inside advances by `rate` per timeline frame. `trimBefore`
-// starts the segment at the scene frame where the previous one stopped. The
-// scene gets its inner length as durationInFrames and mounts its own Sequence
-// at from=0, which nests cleanly.
+// own inner timing and runs on a warped clock (see src/shared/Warped.tsx).
 const Beat: React.FC<{ id: BeatId; Scene: React.FC<SceneProps> }> = ({ id, Scene }) => {
   const b = beatById(id);
-  return (
-    <>
-      {b.segments.map((s, i) => (
-        <Sequence
-          key={s.from}
-          from={s.from}
-          durationInFrames={s.duration}
-          playbackRate={s.rate}
-          trimBefore={s.innerFrom}
-          name={`${id}.${i}`}
-        >
-          <Scene from={0} durationInFrames={b.innerDurationInFrames} />
-        </Sequence>
-      ))}
-    </>
-  );
+  return <Warped name={id} segments={b.segments} innerDurationInFrames={b.innerDurationInFrames} Scene={Scene} />;
 };
 
 const Plain: React.FC<{ id: BeatId; children: React.ReactNode }> = ({ id, children }) => {
