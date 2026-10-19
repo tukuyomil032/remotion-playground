@@ -25,6 +25,8 @@
     "upgrade": "remotion upgrade",
     "lint": "oxlint src && tsc",
     "render:mc-vector": "remotion render src/index.ts MCVectorPromo out/mc-vector-promo.mp4 --codec=h264",
-    "generate:audio:mc-vector": "bun scripts/mc-vector/generate-audio.ts"
+    "generate:audio:mc-vector": "bun scripts/mc-vector/generate-audio.ts",
+    "render:snapzy": "remotion render src/index.ts SnapzyPromo out/snapzy-promo.mp4 --codec=h264 --concurrency=3",
+    "generate:audio:snapzy": "bun scripts/snapzy/generate-audio.ts"
   }
 }
