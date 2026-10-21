@@ -25,13 +25,13 @@ The audio scripts need `ffmpeg` at `/opt/homebrew/bin/ffmpeg`.
     <summary>
     MC-Vector
     </summary>
-<video src="/public/resources/mc-vector-promo.mp4"  controls="true" width="600">
+<video src="https://github.com/user-attachments/assets/7f76ccb6-ebba-48a3-b9f3-3163c6cfa1a4" controls width="600"></video>
 </details>
 <details>
     <summary>
     Snapzy
     </summary>
-<video src="/public/resources/snapzy-promo.mp4"  controls="true" width="600">
+<video src="https://github.com/user-attachments/assets/93756672-e91c-4901-ba1d-d66ed2409fc8" controls width="600"></video>
 </details>
 
 ## Scripts
