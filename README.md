@@ -20,6 +20,20 @@ bun run dev                        # Remotion Studio
 
 The audio scripts need `ffmpeg` at `/opt/homebrew/bin/ffmpeg`.
 
+## Output preview
+<details>
+    <summary>
+    MC-Vector
+    </summary>
+<video src="/public/resources/mc-vector-promo.mp4"  controls="true" width="600">
+</details>
+<details>
+    <summary>
+    Snapzy
+    </summary>
+<video src="/public/resources/snapzy-promo.mp4"  controls="true" width="600">
+</details>
+
 ## Scripts
 
 - `bun run dev`: open Remotion Studio.
